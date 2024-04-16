@@ -160,4 +160,75 @@ require("lazy").setup({
 			vim.keymap.set("n", "<c-n>", "<cmd>Telescope grep_string<cr>")
 		end,
 	},
+	-- 6. Debugger
+	{
+		"mfussenegger/nvim-dap",
+		dependencies = {
+			"antoinemadec/FixCursorHold.nvim",
+			"williamboman/mason.nvim",
+			{
+				"theHamsta/nvim-dap-virtual-text",
+				opts = {
+					all_references = true,
+				},
+			},
+		},
+    -- stylua: ignore
+		config = function()
+			local dap = require("dap")
+
+			dap.adapters = {
+				["pwa-node"] = {
+					type = "server",
+					host = "localhost",
+					port = "${port}",
+					executable = {
+						command = "node",
+						args = {
+							vim.fn.stdpath("data") .. "/mason/packages/js-debug-adapter/js-debug/src/dapDebugServer.js",
+							"${port}",
+						},
+					},
+				},
+			}
+
+			for _, language in ipairs({ "typescript", "javascript" }) do
+				dap.configurations[language] = {
+					{
+						type = "pwa-node",
+						request = "launch",
+						name = "Launch node",
+						program = "${file}",
+						cwd = "${workspaceFolder}",
+					},
+					{
+						type = "pwa-node",
+						request = "attach",
+						name = "Attach node",
+						program = "${file}",
+						cwd = "${workspaceFolder}",
+					},
+				}
+			end
+
+			vim.api.nvim_set_hl(0, "DapStoppedLine", { default = true, link = "Visual" })
+
+      vim.keymap.set("n", "<leader>dB", function() dap.set_breakpoint(vim.fn.input('Breakpoint condition: ')) end)
+      vim.keymap.set("n", "<leader>db", function() dap.toggle_breakpoint() end)
+      vim.keymap.set("n", "<leader>dc", function() dap.continue() end)
+      vim.keymap.set("n", "<leader>dC", function() dap.run_to_cursor() end)
+      vim.keymap.set("n", "<leader>dg", function() dap.goto_() end)
+      vim.keymap.set("n", "<leader>di", function() dap.step_into() end)
+      vim.keymap.set("n", "<leader>dj", function() dap.down() end)
+      vim.keymap.set("n", "<leader>dk", function() dap.up() end)
+      vim.keymap.set("n", "<leader>dl", function() dap.run_last() end)
+      vim.keymap.set("n", "<leader>do", function() dap.step_out() end)
+      vim.keymap.set("n", "<leader>dO", function() dap.step_over() end)
+      vim.keymap.set("n", "<leader>dp", function() dap.pause() end)
+      vim.keymap.set("n", "<leader>dr", function() dap.repl.toggle() end)
+      vim.keymap.set("n", "<leader>ds", function() dap.session() end)
+      vim.keymap.set("n", "<leader>dt", function() dap.terminate() end)
+      vim.keymap.set("n", "<leader>dh", function() require("dap.ui.widgets").hover() end)
+		end,
+	},
 })
