@@ -148,4 +148,16 @@ require("lazy").setup({
 			})
 		end,
 	},
+	-- 5. fuzzy finder
+	{
+		"nvim-telescope/telescope.nvim",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		config = function()
+			local telescope = require("telescope")
+			telescope.setup()
+			vim.keymap.set("n", "<c-p>", "<cmd>Telescope find_files<cr>")
+			vim.keymap.set("n", "<c-g>", "<cmd>Telescope live_grep<cr>")
+			vim.keymap.set("n", "<c-n>", "<cmd>Telescope grep_string<cr>")
+		end,
+	},
 })
