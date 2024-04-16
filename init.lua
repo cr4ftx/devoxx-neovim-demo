@@ -26,4 +26,27 @@ end
 vim.opt.runtimepath:prepend(lazypath)
 
 -- lazy plugin config
-require("lazy").setup({})
+require("lazy").setup({
+	-- 1. colorscheme
+	{
+		"folke/tokyonight.nvim",
+		lazy = false,
+		priority = 1000,
+		config = function()
+			vim.cmd([[colorscheme tokyonight]])
+		end,
+	},
+	-- 2. nvim-treesitter
+	{
+		"nvim-treesitter/nvim-treesitter",
+		build = ":TSUpdate",
+		config = function()
+			require("nvim-treesitter.configs").setup({
+				highlight = {
+					enable = true,
+					additional_vim_regex_highlighting = false,
+				},
+			})
+		end,
+	},
+})
